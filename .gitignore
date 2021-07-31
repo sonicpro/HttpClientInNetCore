@@ -3,6 +3,7 @@
 ################################################################################
 
 /.vs
+*.user
 /Finished sample/Marvin.IDP/obj
 /Finished sample/Movies.API/bin/Debug/netcoreapp2.1
 /Finished sample/Movies.API/obj
