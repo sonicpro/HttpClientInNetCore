@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Movies.Client.Services;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Movies.Client
@@ -50,30 +49,37 @@ namespace Movies.Client
 
             serviceCollection.AddLogging();
 
-			// register the integration service on our container with a 
-			// scoped lifetime
+            serviceCollection.AddHttpClient("MoviesClient", client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:57863");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            });
 
-			// For the CRUD demos
-			serviceCollection.AddScoped<IIntegrationService, CRUDService>();
+            // register the integration service on our container with a 
+            // scoped lifetime
 
-			// For the partial update demos
-			serviceCollection.AddScoped<IIntegrationService, PartialUpdateService>();
-            serviceCollection.AddScoped<CRUDService>();
+            // For the CRUD demos
+            serviceCollection.AddScoped<IIntegrationService, CRUDService>();
 
-			// For the stream demos
-			serviceCollection.AddScoped<IIntegrationService, StreamService>();
+            // For the partial update demos
+            //serviceCollection.AddScoped<IIntegrationService, PartialUpdateService>();
+            //serviceCollection.AddScoped<CRUDService>();
 
-			// For the cancellation demos
-			// serviceCollection.AddScoped<IIntegrationService, CancellationService>();
+            // For the stream demos
+            serviceCollection.AddScoped<IIntegrationService, StreamService>();
 
-			// For the HttpClientFactory demos
-			// serviceCollection.AddScoped<IIntegrationService, HttpClientFactoryInstanceManagementService>();
+            // For the cancellation demos
+            // serviceCollection.AddScoped<IIntegrationService, CancellationService>();
 
-			// For the dealing with errors and faults demos
-			// serviceCollection.AddScoped<IIntegrationService, DealingWithErrorsAndFaultsService>();
+            // For the HttpClientFactory demos
+            serviceCollection.AddScoped<IIntegrationService, HttpClientFactoryInstanceManagementService>();
 
-			// For the custom http handlers demos
-			// serviceCollection.AddScoped<IIntegrationService, HttpHandlersService>();     
-		}
+            // For the dealing with errors and faults demos
+            // serviceCollection.AddScoped<IIntegrationService, DealingWithErrorsAndFaultsService>();
+
+            // For the custom http handlers demos
+            // serviceCollection.AddScoped<IIntegrationService, HttpHandlersService>();
+        }
     }
 }

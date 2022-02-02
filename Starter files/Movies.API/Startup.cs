@@ -75,7 +75,7 @@ namespace Movies.API
         {
             // use response compression (client should pass through 
             // Accept-Encoding)
-            app.UseResponseCompression();
+            //app.UseResponseCompression();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
