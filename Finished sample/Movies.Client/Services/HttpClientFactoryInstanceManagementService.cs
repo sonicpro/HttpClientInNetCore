@@ -2,6 +2,7 @@
 using Movies.Client.Models;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -32,7 +33,23 @@ namespace Movies.Client.Services
             // await GetMoviesWithHttpClientFromFactory(_cancellationTokenSource.Token);
             // await GetMoviesWithNamedHttpClientFromFactory(_cancellationTokenSource.Token);
             // await GetMoviesWithTypedHttpClientFromFactory(_cancellationTokenSource.Token);
-            await GetMoviesViaMoviesClient(_cancellationTokenSource.Token);
+            //await GetMoviesViaMoviesClient(_cancellationTokenSource.Token);
+            await TestReuseWebClient();
+            //await TestDisposeWebClient();
+        }
+
+        private Task TestDisposeWebClient()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                using var webClient = new WebClient();
+                var uri = new Uri("https://www.google.com");
+                byte[] google = webClient.DownloadData(uri);
+                Console.WriteLine(
+                    $"Request completed successfully downloading {google.Length.ToString()} bytes of data.");
+            }
+
+            return Task.CompletedTask;
         }
 
         private async Task TestDisposeHttpClient(CancellationToken cancellationToken)
@@ -46,20 +63,33 @@ namespace Movies.Client.Services
                         "https://www.google.com");
 
                     using (var response = await httpClient.SendAsync(request,
-                        HttpCompletionOption.ResponseHeadersRead,
-                        cancellationToken))
+                               HttpCompletionOption.ResponseHeadersRead,
+                               cancellationToken))
                     {
                         var stream = await response.Content.ReadAsStreamAsync();
                         response.EnsureSuccessStatusCode();
 
                         Console.WriteLine($"Request completed with status code" +
-                            $" {response.StatusCode}");
+                                          $" {response.StatusCode}");
                     }
                 }
             }
         }
 
-        private async Task TestReuseHttpClient(CancellationToken cancellationToken)
+        private Task TestReuseWebClient()
+        {
+            var webClient = new WebClient();
+            for (int i = 0; i < 10; i++)
+            {
+                var uri = new Uri("https://www.google.com");
+                byte[] google = webClient.DownloadData(uri);
+                Console.WriteLine($"Request completed successfully downloading {google.Length.ToString()} bytes of data.");
+            }
+
+            return Task.CompletedTask;
+        }
+
+    private async Task TestReuseHttpClient(CancellationToken cancellationToken)
         {
             var httpClient = new HttpClient();
 
